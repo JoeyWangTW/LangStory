@@ -11,9 +11,8 @@ import ReactFlow, {
 import axios from 'axios';
 import 'reactflow/dist/style.css';
 
-const API_KEY = ''; // Replace with your actual API key
-
 const InteractiveAudiobook = () => {
+    const [apiKey, setApiKey] = useState('');
     const [bookData, setBookData] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -22,6 +21,10 @@ const InteractiveAudiobook = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const generateImage = async (prompt) => {
+        if (!apiKey) {
+            console.error('API key is not set');
+            return null;
+        }
         try {
             const response = await axios.post(
                 'https://api.aimlapi.com/images/generations',
@@ -31,7 +34,7 @@ const InteractiveAudiobook = () => {
                 },
                 {
                     headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
+                        'Authorization': `Bearer ${apiKey}`,
                         'Content-Type': 'application/json'
                     },
                 }
@@ -128,9 +131,26 @@ const InteractiveAudiobook = () => {
         }
     };
 
+
     const renderFileInput = () => (
         <div className="text-center">
             <h1 className="text-4xl font-bold mb-4">LangStory</h1>
+
+            <div className="mb-8">
+
+                <label htmlFor="api-key" className="block text-sm font-medium text-white">Enter your AI/ML API key (we are not storing it):</label>
+                <div className="flex justify-center">
+                    <input
+                        type="password"
+                        id="api-key"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        className="mt-1 block w-1/2 text-black rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        placeholder="Your API key"
+
+                    />
+                </div>
+            </div>
             <p className="text-xl mb-4">Please upload a generated story JSON file to begin</p>
             <div className="flex justify-center">
                 <input
